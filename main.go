@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
-	"log"
 	"os"
+	"time"
 )
 
 var args struct {
@@ -16,14 +16,6 @@ var args struct {
 	quiet        bool
 	version      bool
 }
-
-type StandardError struct {
-	name        string
-	description string
-}
-
-// Holds references of output files
-var OutputFiles []*os.File
 
 func parseArgs() {
 	flag.StringVar(&args.outputFormat, "e", defaultOutputFormat, "output file extension")
@@ -53,70 +45,40 @@ func usage() {
 	flag.PrintDefaults()
 }
 
-func openFile(fileName string) *os.File {
-	file, err := os.Open(fileName)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return file
-}
-
-func getOutputFile() *os.File {
-	return OutputFiles[len(OutputFiles)-1]
-}
-
-func writeLine(i int, lineText string) {
-	// fmt.Println(i, lineText)
-	file := getOutputFile()
-
-	line := fmt.Sprintf("%v  %s\n", i, lineText)
-	_, err := file.WriteString(line)
-	if err != nil {
-		log.Fatal(err)
-		file.Close()
-		return
-	}
-
-	// log.Println(l, "bytes written successfully")
-	// err = file.Close()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// 	file.Close()
-	// 	return
-	// }
-}
-
 type lineWriter func(int, string)
 
 func parseLines(file *os.File, parse lineWriter) {
 	scanner := bufio.NewScanner(file)
 	i := 0
 	for scanner.Scan() {
-		i += 1
 		lineText := scanner.Text()
 		parse(i, lineText)
+		i += 1
 	}
 
 	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		reason := fmt.Sprintf("Failed to parse line #%v.", i)
+		Stop(reason, 1)
 	}
 }
 
 func main() {
 	parseArgs()
 
-	log.Printf("Reading file: %s", args.source)
+	t := time.Now()
+	OutputFiles = []*os.File{}
+
+	if !args.quiet {
+		fmt.Printf("Reading file: %s", args.source)
+	}
+
 	file := openFile(args.source)
 	defer file.Close()
 
-	log.Println(args)
-	fileName := fmt.Sprintf("%s.%s", args.outputDir, args.outputFormat)
-	outputFile, err := os.Create(fileName)
-	if err != nil {
-		log.Fatal(err)
-	}
-	OutputFiles = []*os.File{outputFile}
-
 	parseLines(file, writeLine)
+
+	if !args.quiet {
+		fmt.Printf("Slicing complete: %d seconds elapsed\n", int(time.Since(t).Seconds()))
+	}
 }
