@@ -18,15 +18,16 @@ It compiles the module and makes **sabre** executable available under `~/go/bin`
 
 ## Usage
 
+```
 usage: sabre [options] SOURCE OUTPUT
 
   -e string
-    	output file extension (default "txt")
+    	Output file extension (default "txt")
   -l int
     	Max lines sliced per file (default 100)
   -q	Supress informational output
   -v	Print version info about sabre and exit
-
+```
 where `SOURCE` is the source file to be sliced
 and `OUTPUT` is a directory to save the slices to
 
