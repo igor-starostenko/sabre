@@ -49,7 +49,6 @@ func handleCloseFile(file *os.File, i int) {
 
 func writeLine(i int, lineText string) {
 	file := generateOutputFile(i)
-	// fmt.Print("|", i, " - ", len(OutputFiles), getOutputFile())
 
 	line := fmt.Sprintf("%s\n", lineText)
 	_, err := file.WriteString(line)
