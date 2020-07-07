@@ -13,14 +13,16 @@ var args struct {
 	outputDir    string
 	outputFormat string
 	lineLimit    int
+	scan         bool
 	quiet        bool
 	version      bool
 }
 
 func parseArgs() {
-	flag.StringVar(&args.outputFormat, "e", defaultOutputFormat, "output file extension")
+	flag.StringVar(&args.outputFormat, "e", defaultOutputFormat, "Output file extension")
 	flag.IntVar(&args.lineLimit, "l", defaultLineLimit, "Max lines sliced per file")
 	flag.BoolVar(&args.quiet, "q", false, "Supress informational output")
+	flag.BoolVar(&args.scan, "s", false, "Use Scan method. Has max 4096 byte buffer limit for a line.")
 	flag.BoolVar(&args.version, "v", false, "Print version info about sabre and exit")
 	// flag.IntVar(&args.workers, "w", config.Workers, "# of workers")
 	flag.Usage = usage
@@ -47,7 +49,7 @@ func usage() {
 
 type lineWriter func(int, string)
 
-func parseLines(file *os.File, parse lineWriter) {
+func scanLines(file *os.File, parse lineWriter) {
 	scanner := bufio.NewScanner(file)
 	i := 0
 	for scanner.Scan() {
@@ -76,7 +78,11 @@ func main() {
 	file := openFile(args.source)
 	defer file.Close()
 
-	parseLines(file, writeLine)
+	if args.scan {
+		scanLines(file, writeLine)
+	} else {
+		// readLines(file, writeLine)
+	}
 
 	if !args.quiet {
 		fmt.Printf("Slicing complete: %d seconds elapsed\n", int(time.Since(t).Seconds()))
