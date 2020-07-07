@@ -70,7 +70,7 @@ func main() {
 	OutputFiles = []*os.File{}
 
 	if !args.quiet {
-		fmt.Printf("Reading file: %s", args.source)
+		fmt.Printf("Reading file: %s\n", args.source)
 	}
 
 	file := openFile(args.source)
