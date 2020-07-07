@@ -8,6 +8,8 @@ import (
 // Holds references of output files
 var OutputFiles []*os.File
 
+var fileCount int
+
 func openFile(fileName string) *os.File {
 	file, err := os.Open(fileName)
 	if err != nil {
@@ -27,6 +29,7 @@ func createFile(index int) {
 		reason := fmt.Sprintf("Failed to create a file: %s", fileName)
 		Stop(reason, 1)
 	}
+	fileCount += 1
 	OutputFiles = append(OutputFiles, outputFile)
 }
 
