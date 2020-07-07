@@ -128,6 +128,6 @@ func main() {
 	}
 
 	if !args.quiet {
-		fmt.Printf("Slicing complete: %d seconds elapsed\n", int(time.Since(t).Seconds()))
+		fmt.Printf("Sliced into %d files in %d seconds.\n", fileCount, int(time.Since(t).Seconds()))
 	}
 }
