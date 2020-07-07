@@ -2,8 +2,10 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"time"
 )
@@ -65,6 +67,47 @@ func scanLines(file *os.File, parse lineWriter) {
 	}
 }
 
+func readLines(file *os.File, parse lineWriter) {
+	reader := bufio.NewReader(file)
+	var err error
+	i := 0
+
+	for {
+		var buffer bytes.Buffer
+		var l []byte
+		var isPrefix bool
+
+		for {
+			l, isPrefix, err = reader.ReadLine()
+			buffer.Write(l)
+
+			// If we've reached the end of the line, stop reading.
+			if !isPrefix {
+				break
+			}
+
+			// If we're just at the EOF, break
+			if err != nil {
+				break
+			}
+		}
+
+		if err == io.EOF {
+			break
+		}
+
+		lineText := buffer.String()
+		parse(i, lineText)
+		i += 1
+	}
+
+	if err != io.EOF {
+		fmt.Println(err)
+		reason := fmt.Sprintf("Failed to parse line #%v.", i)
+		Stop(reason, 1)
+	}
+}
+
 func main() {
 	parseArgs()
 
@@ -81,7 +124,7 @@ func main() {
 	if args.scan {
 		scanLines(file, writeLine)
 	} else {
-		// readLines(file, writeLine)
+		readLines(file, writeLine)
 	}
 
 	if !args.quiet {
