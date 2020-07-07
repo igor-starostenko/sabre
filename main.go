@@ -21,12 +21,12 @@ var args struct {
 }
 
 func parseArgs() {
-	flag.StringVar(&args.outputFormat, "e", defaultOutputFormat, "Output file extension")
-	flag.IntVar(&args.lineLimit, "l", defaultLineLimit, "Max lines sliced per file")
-	flag.BoolVar(&args.quiet, "q", false, "Supress informational output")
+	flag.StringVar(&args.outputFormat, "e", defaultOutputFormat, "Output file extension.")
+	flag.IntVar(&args.lineLimit, "l", defaultLineLimit, "Max lines sliced per file.")
+	flag.BoolVar(&args.quiet, "q", false, "Supress informational output.")
 	flag.BoolVar(&args.scan, "s", false, "Use Scan method. Has max 4096 byte buffer limit for a line.")
-	flag.BoolVar(&args.version, "v", false, "Print version info about sabre and exit")
-	// flag.IntVar(&args.workers, "w", config.Workers, "# of workers")
+	flag.BoolVar(&args.version, "v", false, "Print version info about sabre and exit.")
+	// flag.IntVar(&args.workers, "w", defaultWorkers, "# of workers")
 	flag.Usage = usage
 	flag.Parse()
 
